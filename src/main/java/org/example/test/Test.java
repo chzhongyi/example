@@ -9,10 +9,12 @@ import org.example.entity.StrawberryInfo;
 import org.example.strategy.*;
 
 import java.math.BigDecimal;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 
 public class Test {
 
-    public static void main( String[] args ){
+    public static void main( String[] args ) throws InterruptedException {
 
         StrawberryInfo strawberryInfo = new StrawberryInfo();
         FruitStrategy apple = new AppleStrategy();
@@ -48,6 +50,71 @@ public class Test {
         System.out.println(totalCash4);
 
 
+//        testSamef();
+//        testCountDownLatch();
+          testReverse();
 
+    }
+
+    public  static void testSamef() throws InterruptedException{
+        Semaphore s = new Semaphore(1);
+        s.acquire();
+        System.out.println("我获取了信号");
+        s.acquire();//阻塞说明对同一个线程有效
+        System.out.println("我又获取了");
+
+
+    }
+
+    public static void testCountDownLatch()throws InterruptedException{
+        CountDownLatch c = new CountDownLatch(1);
+        c.countDown();
+        System.out.println("我释放了");
+        c.await();//同一个线程有效
+        System.out.println("我可以执行了");
+    }
+    public static void testReverse(){
+        ListNode head = new ListNode(1);
+        ListNode temp = head;
+        for(int i = 2; i < 4; i++){
+            temp.next = new ListNode(i);
+            temp = temp.next;
+        }
+        temp = head;
+        while(temp != null){
+            System.out.println(temp.val);
+            temp = temp.next;
+        }
+        head = reverListNode(head);
+        temp = head;
+        while(temp != null){
+            System.out.println(temp.val);
+            temp = temp.next;
+        }
+    }
+    public static ListNode reverListNode(ListNode head){
+        ListNode lastNode = null;
+        while(head != null){
+            ListNode temp = head.next;
+            head.next = lastNode;
+            if(temp == null){
+                lastNode = head;
+                break;
+            }
+            lastNode = temp;
+            ListNode temp1 = temp.next;
+            temp.next = head;
+            head = temp1;
+        }
+        return lastNode;
+    }
+
+    static class ListNode{
+        int val;
+        ListNode next = null;
+
+        ListNode(int val) {
+            this.val = val;
+        }
     }
 }
